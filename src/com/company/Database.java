@@ -7,6 +7,7 @@ import java.time.LocalDate;
 import java.util.Calendar;
 
 public class Database {
+    private static Database instance = null;
     private String host = "jdbc:mysql://localhost:3306/saving";
     private String uName = "root";
     private String uPass = "admin";
@@ -15,8 +16,16 @@ public class Database {
             + " values (?, ?, ?, ?)";
     private String delete = "delete from saving.report";
 
+
     public Database() {
 
+    }
+
+    public static Database getInstance(){
+        if(instance==null){
+            instance = new Database();
+        }
+        return instance;
     }
 
    public void printAll(){

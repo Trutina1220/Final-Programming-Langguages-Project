@@ -1,5 +1,6 @@
 package com.company;
 
+import java.sql.Date;
 import java.text.DateFormatSymbols;
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -9,9 +10,9 @@ public class Account implements Atm {
     private int balance;
     private ArrayList<Integer> debitList =  new ArrayList<Integer>();
     private ArrayList<Integer> creditList = new ArrayList<Integer>();
-    private ArrayList<String> debitInfo = new ArrayList<String>();
-    private ArrayList<String> creditInfo = new ArrayList<String>();
+    private ArrayList<Integer> monthlyReport = new ArrayList<Integer>();
     private Calendar calendar = Calendar.getInstance();
+    private Database database = Database.getInstance();
 
     public int getBalance() {
         return balance;
@@ -37,21 +38,6 @@ public class Account implements Atm {
         this.creditList.add(amount);
     }
 
-    public ArrayList<String> getDebitInfo() {
-        return debitInfo;
-    }
-
-    public void setDebitInfo(String info) {
-        this.debitInfo.add(info);
-    }
-
-    public ArrayList<String> getCreditInfo() {
-        return creditInfo;
-    }
-
-    public void setCreditInfo(String info) {
-        this.creditInfo.add(info);
-    }
 
     public String getDay(){
         String dayNames[] = new DateFormatSymbols().getWeekdays();
@@ -66,6 +52,12 @@ public class Account implements Atm {
         return LocalDate.now();
     }
 
+    public void deleteDatabase(){
+        database.deleteData();
+    }
+    public void printDatabase(){
+        database.printAll();
+    }
 
     @Override
     public void sendMoney(Account a, int amount) {
@@ -73,15 +65,53 @@ public class Account implements Atm {
         a.balance += amount;
     }
 
+
+
     @Override
-    public void debit(int amount, String info) {
-        setDebitInfo(info);
-        setDebitList(amount);
+    public int getWeeklyAmount() {
+        int debitAmount = 0;
+        int creditAmount = 0;
+        for(int i = 0 ; i < this.debitList.size();i++){
+            debitAmount += this.debitList.get(i);
+        }
+
+        for (int i = 0 ; i < this.creditList.size();i++){
+            creditAmount += this.creditList.get(i);
+        }
+        this.balance += debitAmount - creditAmount;
+        this.monthlyReport.add(debitAmount-creditAmount);
+        return debitAmount - creditAmount;
+
     }
 
     @Override
-    public void credit(int amount, String info) {
-        setCreditList(amount);
-        setDebitInfo(info);
+    public int getMonthlyAmount() {
+        int monthlyAmount = 0 ;
+        for(int i =0 ; i < this.monthlyReport.size();i++){
+            monthlyAmount += this.monthlyReport.get(i);
+        }
+        return monthlyAmount;
+    }
+
+    @Override
+    public int sendStockMoney(StockAccount s) {
+
+        int weeklySaving =  getWeeklyAmount()*20/100 ;
+        sendMoney(s,weeklySaving);
+        this.balance -= weeklySaving;
+        return weeklySaving;
+
+    }
+
+    @Override
+    public void inputDatabase(char transaction , String info , int amount) {
+        Date sqlDate = Date.valueOf(getDateMonthYear());
+        database.insert(sqlDate,amount,info,transaction);
+        if (transaction == 'd'){
+            setDebitList(amount);
+        }
+        else{
+            setCreditList(amount);
+        }
     }
 }
