@@ -12,8 +12,11 @@ public class Main {
         Database d = new Database();
         System.out.println(a1.getDateMonthYear());
         Date sqlDate = Date.valueOf(a1.getDateMonthYear());
-        d.insert(sqlDate,111,"es campur",'d');
         d.printAll();
+        d.deleteData();
+        d.printAll();
+
+
 
     }
 }

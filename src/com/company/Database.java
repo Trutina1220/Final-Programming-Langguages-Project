@@ -10,12 +10,13 @@ public class Database {
     private String host = "jdbc:mysql://localhost:3306/saving";
     private String uName = "root";
     private String uPass = "admin";
-    private String sql = "select * from saving.transaction";
-    private String query = "insert into saving.transaction (date, debet, credit,desc)"
-            + " values (?, ?, ?,?)";
+    private String sql = "select * from saving.report";
+    private String query = "insert into saving.report (date, debit, credit, information)"
+            + " values (?, ?, ?, ?)";
+    private String delete = "delete from saving.report";
 
     public Database() {
-        printAll();
+
     }
 
    public void printAll(){
@@ -26,11 +27,11 @@ public class Database {
            ResultSet rs = stat.executeQuery(sql);
 
            while(rs.next()){
-               int id = rs.getInt("idtransaction");
+               int id = rs.getInt("id");
                Date date = rs.getDate("date");
-               int debet = rs.getInt("debet");
+               int debet = rs.getInt("debit");
                int credit = rs.getInt("credit");
-               String desc = rs.getString("desc");
+               String desc = rs.getString("information");
                String t = id+" "+date+ " "+debet+ "  "+credit+"  "+desc;
                System.out.println(t);
 
@@ -41,6 +42,8 @@ public class Database {
        }
 
    }
+
+
 
    public void insert(Date date, int amount, String string, char type) {
        try {
@@ -55,7 +58,7 @@ public class Database {
                preparedStatement.setInt(3,amount);
                preparedStatement.setInt(2,0);
            }
-           preparedStatement.setString (4, "Rubble");
+           preparedStatement.setString(4,string);
            preparedStatement.execute();
            con.close();
 
@@ -66,20 +69,17 @@ public class Database {
        }
    }
 
-   public void test(){
+   public void deleteData(){
+        try {
+            Connection con = DriverManager.getConnection(host,uName,uPass);
+            PreparedStatement preparedStatement =  con.prepareStatement(delete);
+            preparedStatement.execute();
+            con.close();
+        }catch (SQLException err){
+            System.out.println(err.getMessage());
+        }
 
-           try{
-               Connection con = DriverManager.getConnection(host,uName,uPass);
-               Statement st = con.createStatement();
-               st.executeUpdate("INSERT INTO saving.transaction(debet,credit)"+ "VALUES(100,300)");
-               con.close();
-
-
-
-           }catch (SQLException err){
-               System.out.println(err.getMessage());
-           }
-       }
+   }
 
    }
 
