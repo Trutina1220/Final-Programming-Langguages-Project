@@ -11,10 +11,11 @@ public class Database {
     private String host = "jdbc:mysql://localhost:3306/saving";
     private String uName = "root";
     private String uPass = "admin";
-    private String sql = "select * from saving.report";
+    private String tableName = "saving.report";
+    private String sql = "select * from ";
     private String query = "insert into saving.report (date, debit, credit, information)"
             + " values (?, ?, ?, ?)";
-    private String delete = "delete from saving.report";
+    private String delete = "delete from ";
 
 
     public Database() {
@@ -28,12 +29,15 @@ public class Database {
         return instance;
     }
 
-   public void printAll(){
+
+
+
+    public void printAll(){
        try{
-           Connection con = DriverManager.getConnection(host,uName,uPass);
+           Connection con = DriverManager.getConnection(this.host,this.uName,this.uPass);
            Statement stat = con.createStatement();
 
-           ResultSet rs = stat.executeQuery(sql);
+           ResultSet rs = stat.executeQuery(sql+this.tableName);
 
            while(rs.next()){
                int id = rs.getInt("id");
@@ -80,8 +84,8 @@ public class Database {
 
    public void deleteData(){
         try {
-            Connection con = DriverManager.getConnection(host,uName,uPass);
-            PreparedStatement preparedStatement =  con.prepareStatement(delete);
+            Connection con = DriverManager.getConnection(this.host,this.uName,this.uPass);
+            PreparedStatement preparedStatement =  con.prepareStatement(delete+this.tableName);
             preparedStatement.execute();
             con.close();
         }catch (SQLException err){
@@ -89,6 +93,58 @@ public class Database {
         }
 
    }
+
+   public int getSaved(Date currentDate, Date previousCheck){
+       int saved = 0;
+        try{
+           Connection con = DriverManager.getConnection(this.host,this.uName,this.uPass);
+           Statement stat = con.createStatement();
+           ResultSet rs = stat.executeQuery(sql+this.tableName);
+
+
+           while(rs.next()){
+               Date tableDate = rs.getDate("date");
+               int debit = rs.getInt("debit");
+               int credit = rs.getInt("credit");
+               if(tableDate.before(currentDate) && tableDate.after(previousCheck)){
+                   saved += debit;
+                   saved -= credit;
+               }
+
+           }
+           return saved;
+
+
+       }catch (SQLException err){
+           System.out.println(err.getMessage());
+            return saved;
+       }
+
+   }
+
+   public Date getStartingDate(){
+       Date tableDate = Date.valueOf("2020-06-15");
+
+        try{
+           Connection con = DriverManager.getConnection(this.host,this.uName,this.uPass);
+           Statement stat = con.createStatement();
+           ResultSet rs = stat.executeQuery(sql+this.tableName);
+
+
+           while(rs.next()){
+               tableDate = rs.getDate("date");
+               return tableDate;
+           }
+
+
+
+       }catch (SQLException err){
+           System.out.println(err.getMessage());
+           return tableDate;
+       }
+        return tableDate;
+   }
+
 
    }
 

@@ -1,9 +1,10 @@
 package com.company;
 
+import java.sql.Date;
+
 public interface Atm {
     void sendMoney(Account a ,int amount);
-    int getWeeklyAmount();
-    int getMonthlyAmount();
+    int getReport(Date previousCheck);
     int sendStockMoney( StockAccount s );
-    void inputDatabase(char transaction, String info, int amount);
+
 }

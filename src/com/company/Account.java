@@ -2,17 +2,20 @@ package com.company;
 
 import java.sql.Date;
 import java.text.DateFormatSymbols;
+import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.GregorianCalendar;
 
 public class Account implements Atm {
     private int balance;
-    private ArrayList<Integer> debitList =  new ArrayList<Integer>();
-    private ArrayList<Integer> creditList = new ArrayList<Integer>();
-    private ArrayList<Integer> monthlyReport = new ArrayList<Integer>();
     private Calendar calendar = Calendar.getInstance();
     private Database database = Database.getInstance();
+    private LocalDate startingDate = getStartingDate();
+    private Date previousCheckWeek = previousWeek();
+    private Date previousCheckMonth = previousMonth();
+
 
     public int getBalance() {
         return balance;
@@ -22,42 +25,42 @@ public class Account implements Atm {
         this.balance = balance;
     }
 
-    public ArrayList<Integer> getDebitList() {
-        return debitList;
+    public LocalDate getStartingDate(){
+        return database.getStartingDate().toLocalDate();
     }
 
-    public void setDebitList(int amount) {
-        this.debitList.add(amount);
+    public Date previousWeek() {
+        Date prevWeek = Date.valueOf(startingDate.minusWeeks(1));
+        return prevWeek;
     }
 
-    public ArrayList<Integer> getCreditList() {
-        return creditList;
-    }
-
-    public void setCreditList(int amount) {
-        this.creditList.add(amount);
+    public Date previousMonth(){
+        Date prevMonth = Date.valueOf(startingDate.minusMonths(1));
+        return prevMonth;
     }
 
 
-    public String getDay(){
+    public String getDay() {
         String dayNames[] = new DateFormatSymbols().getWeekdays();
         return (dayNames[this.calendar.get(Calendar.DAY_OF_WEEK)]);
     }
 
-    public int getDate(){
+    public int getDate() {
         return calendar.get(Calendar.DATE);
     }
 
-    public LocalDate getDateMonthYear(){
+    public LocalDate getDateMonthYear() {
         return LocalDate.now();
     }
 
-    public void deleteDatabase(){
+    public void deleteDatabase() {
         database.deleteData();
     }
-    public void printDatabase(){
+
+    public void printDatabase() {
         database.printAll();
     }
+
 
     @Override
     public void sendMoney(Account a, int amount) {
@@ -66,52 +69,29 @@ public class Account implements Atm {
     }
 
 
-
     @Override
-    public int getWeeklyAmount() {
-        int debitAmount = 0;
-        int creditAmount = 0;
-        for(int i = 0 ; i < this.debitList.size();i++){
-            debitAmount += this.debitList.get(i);
-        }
-
-        for (int i = 0 ; i < this.creditList.size();i++){
-            creditAmount += this.creditList.get(i);
-        }
-        this.balance += debitAmount - creditAmount;
-        this.monthlyReport.add(debitAmount-creditAmount);
-        return debitAmount - creditAmount;
-
+    public int getReport(Date previousCheck) {
+        Date sqlDate = Date.valueOf(getDateMonthYear());
+        int amount = database.getSaved(sqlDate, previousCheck);
+        return amount;
     }
 
-    @Override
-    public int getMonthlyAmount() {
-        int monthlyAmount = 0 ;
-        for(int i =0 ; i < this.monthlyReport.size();i++){
-            monthlyAmount += this.monthlyReport.get(i);
-        }
-        return monthlyAmount;
-    }
 
     @Override
     public int sendStockMoney(StockAccount s) {
 
-        int weeklySaving =  getWeeklyAmount()*20/100 ;
-        sendMoney(s,weeklySaving);
+        int weeklySaving = getReport(previousCheckWeek) * 20 / 100;
+        sendMoney(s, weeklySaving);
         this.balance -= weeklySaving;
         return weeklySaving;
 
     }
 
-    @Override
-    public void inputDatabase(char transaction , String info , int amount) {
-        Date sqlDate = Date.valueOf(getDateMonthYear());
-        database.insert(sqlDate,amount,info,transaction);
-        if (transaction == 'd'){
-            setDebitList(amount);
-        }
-        else{
-            setCreditList(amount);
-        }
+    public void insert(Date date,int amount , String information, char type){
+        database.insert(date,amount,information,type);
     }
 }
+
+
+
+
