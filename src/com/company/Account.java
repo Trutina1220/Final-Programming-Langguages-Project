@@ -13,8 +13,8 @@ public class Account implements Atm {
     private Calendar calendar = Calendar.getInstance();
     private Database database = Database.getInstance();
     private LocalDate startingDate = getStartingDate();
-    private Date previousCheckWeek = previousWeek();
-    private Date previousCheckMonth = previousMonth();
+    private Date previousCheckWeek = getPreviousWeek();
+    private Date previousCheckMonth = getPreviousMonth();
 
 
     public int getBalance() {
@@ -29,12 +29,12 @@ public class Account implements Atm {
         return database.getStartingDate().toLocalDate();
     }
 
-    public Date previousWeek() {
+    public Date getPreviousWeek() {
         Date prevWeek = Date.valueOf(startingDate.minusWeeks(1));
         return prevWeek;
     }
 
-    public Date previousMonth(){
+    public Date getPreviousMonth(){
         Date prevMonth = Date.valueOf(startingDate.minusMonths(1));
         return prevMonth;
     }
@@ -71,6 +71,13 @@ public class Account implements Atm {
 
     @Override
     public int getReport(Date previousCheck) {
+        Date sqlDate = Date.valueOf(getDateMonthYear());
+        int amount = database.getSaved(sqlDate, previousCheck);
+        return amount;
+    }
+
+    @Override
+    public int getSpending(Date previousCheck) {
         Date sqlDate = Date.valueOf(getDateMonthYear());
         int amount = database.getSaved(sqlDate, previousCheck);
         return amount;

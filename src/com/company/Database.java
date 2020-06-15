@@ -122,6 +122,33 @@ public class Database {
 
    }
 
+    public int getSpending(Date currentDate, Date previousCheck){
+        int spending = 0;
+        try{
+            Connection con = DriverManager.getConnection(this.host,this.uName,this.uPass);
+            Statement stat = con.createStatement();
+            ResultSet rs = stat.executeQuery(sql+this.tableName);
+
+
+            while(rs.next()){
+                Date tableDate = rs.getDate("date");
+                int debit = rs.getInt("debit");
+                int credit = rs.getInt("credit");
+                if(tableDate.before(currentDate) && tableDate.after(previousCheck)){
+                    spending += credit;
+                }
+
+            }
+            return spending;
+
+
+        }catch (SQLException err){
+            System.out.println(err.getMessage());
+            return spending;
+        }
+
+    }
+
    public Date getStartingDate(){
        Date tableDate = Date.valueOf("2020-06-15");
 

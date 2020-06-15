@@ -12,7 +12,7 @@ public class Main {
         StockAccount s1 = new StockAccount();
         System.out.println(a1.getDateMonthYear());
         Date sqlDate = Date.valueOf(a1.getDateMonthYear());
-        String str = "2020-05-16";
+        String str = "2020-05-18";
         Date sqlData = Date.valueOf(str);
         a1.setBalance(0);
         StockDatabase s2 ;
@@ -28,7 +28,15 @@ public class Main {
 //        System.out.println(a1.getStartingDate());
 //        System.out.println(a1.getReport(a1.previousWeek()));
 //        System.out.println(a1.getReport(a1.previousMonth()));
-
+        a1.insert(sqlData,300,"uang kas ",'d');
+        a1.insert(sqlData,150,"something",'c');
+        a1.insert(sqlDatas,100,"tambah",'d');
+        a1.insert(sqlDatas,50,"cogan",'c');
+        a1.printDatabase();
+        System.out.println(a1.getReport(a1.getPreviousMonth()));
+        System.out.println(a1.getReport(a1.getPreviousWeek()));
+        System.out.println(a1.getSpending(a1.getPreviousWeek()));
+        System.out.println(a1.getSpending(a1.getPreviousMonth()));
 
 
 
