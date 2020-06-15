@@ -9,16 +9,18 @@ import java.util.Calendar;
 import java.util.GregorianCalendar;
 
 public class Account implements Atm {
-    private int balance;
+    private int balance = 0;
     private Calendar calendar = Calendar.getInstance();
     private Database database = Database.getInstance();
+    private StockDatabase stockDatabase = StockDatabase.getInstance();
     private LocalDate startingDate = getStartingDate();
     private Date previousCheckWeek = getPreviousWeek();
     private Date previousCheckMonth = getPreviousMonth();
 
 
     public int getBalance() {
-        return balance;
+        setBalance(database.getBalance());
+        return database.getBalance();
     }
 
     public void setBalance(int balance) {
@@ -90,6 +92,7 @@ public class Account implements Atm {
         int weeklySaving = getReport(previousCheckWeek) * 20 / 100;
         sendMoney(s, weeklySaving);
         this.balance -= weeklySaving;
+        stockDatabase.insert(Date.valueOf(getDateMonthYear()),weeklySaving,'d');
         return weeklySaving;
 
     }

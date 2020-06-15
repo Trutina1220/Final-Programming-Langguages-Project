@@ -7,9 +7,13 @@ public class StockAccount extends Account {
     private StockDatabase sDB = StockDatabase.getInstance();
     public void buyStock(int amount){
 
-        int actualBalance = this.getBalance()-amount;
-        this.setBalance(actualBalance);
+        sDB.insert(Date.valueOf(getDateMonthYear()),amount,'c');
 
+    }
+
+    @Override
+    public int getBalance() {
+        return sDB.getBalance();
     }
 
     @Override

@@ -22,6 +22,31 @@ public class Database {
 
     }
 
+    public int getBalance(){
+        int balance = 0;
+        try{
+            Connection con = DriverManager.getConnection(this.host,this.uName,this.uPass);
+            Statement stat = con.createStatement();
+            ResultSet rs = stat.executeQuery(sql+this.tableName);
+
+
+            while(rs.next()){
+
+                int debit = rs.getInt("debit");
+                balance += debit;
+                int credit = rs.getInt("credit");
+                balance -= credit;
+
+
+            }
+            return balance;
+
+        }catch (SQLException err){
+            System.out.println(err.getMessage());
+            return balance;
+        }
+    }
+
     public static Database getInstance(){
         if(instance==null){
             instance = new Database();
