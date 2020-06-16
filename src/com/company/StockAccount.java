@@ -5,6 +5,15 @@ import java.util.Calendar;
 
 public class StockAccount extends Account {
     private StockDatabase sDB = StockDatabase.getInstance();
+    private static StockAccount instance = null;
+
+    public static StockAccount getInstance(){
+        if(instance==null){
+            instance = new StockAccount();
+        }
+        return instance;
+    }
+
     public void buyStock(int amount){
 
         sDB.insert(Date.valueOf(getDateMonthYear()),amount,'c');

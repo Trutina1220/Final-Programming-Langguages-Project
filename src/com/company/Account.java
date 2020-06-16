@@ -10,6 +10,7 @@ import java.util.GregorianCalendar;
 
 public class Account implements Atm {
     private int balance = 0;
+    private static Account instance = null;
     private Calendar calendar = Calendar.getInstance();
     private Database database = Database.getInstance();
     private StockDatabase stockDatabase = StockDatabase.getInstance();
@@ -17,6 +18,13 @@ public class Account implements Atm {
     private Date previousCheckWeek = getPreviousWeek();
     private Date previousCheckMonth = getPreviousMonth();
 
+
+    public static Account getInstance(){
+        if(instance==null){
+            instance = new Account();
+        }
+        return instance;
+    }
 
     public int getBalance() {
         setBalance(database.getBalance());

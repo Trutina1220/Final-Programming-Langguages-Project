@@ -8,8 +8,8 @@ public class Main {
 
     public static void main(String[] args) {
 
-        Account a1 = new Account();
-        StockAccount s1 = new StockAccount();
+        Account a1 = Account.getInstance();
+        StockAccount s1 = StockAccount.getInstance();
         System.out.println(a1.getDateMonthYear());
         Date sqlDate = Date.valueOf(a1.getDateMonthYear());
         String str = "2020-05-18";
